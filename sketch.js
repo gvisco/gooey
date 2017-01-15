@@ -17,8 +17,6 @@ function setup() {
     canvas.parent('myCanvas');
     ctx = canvas.drawingContext;
 
-    textSize(15);
-
     borderSlider = new Slider(101, 255, borderThreshold, 1, "Border");
     borderSlider.position(20, 20);
     borderSlider.input(onBorderSliderMoved);
@@ -45,6 +43,7 @@ function draw() {
     }
 
     borderSlider.draw();
+    gooeyCheckbox.draw();
 
     //print(entities.length);
 }
@@ -194,14 +193,17 @@ Slider.prototype.value = function() {
 Slider.prototype.draw = function() {
     strokeWeight(0);
     textSize(15);
-    textStyle(NORMAL);
-    text(this.text, this.x + 145, this.y + 15);
+    text(this.text, this.x + 135, this.y + 15);
 }
 
 //---------- Checkbox
 
 function Checkbox(_label, _enabled) {
-    this.delegate = createCheckbox(_label, _enabled);
+    this.label = _label;
+    this.delegate = createCheckbox('', _enabled);
+
+    this.x = 0;
+    this.y = 0;
 }
 
 Checkbox.prototype.changed = function(f) {
@@ -210,9 +212,18 @@ Checkbox.prototype.changed = function(f) {
 }
 
 Checkbox.prototype.position = function(_x, _y) {
-    return this.delegate.position(_x, _y);
+    this.delegate.position(_x, _y);
+
+    this.x = _x;
+    this.y = _y;
 }
 
 Checkbox.prototype.checked = function() {
     return this.delegate.checked();
+}
+
+Checkbox.prototype.draw = function() {
+    strokeWeight(0);
+    textSize(15);
+    text(this.label, this.x + 20, this.y + 15);
 }
