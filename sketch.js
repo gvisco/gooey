@@ -7,7 +7,10 @@ var entities = [];
 var mX = 0;
 var mY = 0;
 
-var borderThreshold = 150;
+var borderThreshold = 120;
+var gooeyEnabled = true;
+
+var c;
 
 function setup() {
     canvas = createCanvas(640, 480);
@@ -16,9 +19,13 @@ function setup() {
 
     textSize(15);
 
-    borderSlider = createSlider(101, 255, 120, 1);
+    borderSlider = new Slider(101, 255, borderThreshold, 1, "Border");
     borderSlider.position(20, 20);
     borderSlider.input(onBorderSliderMoved);
+
+    gooeyCheckbox = new Checkbox("Gooey Effect", gooeyEnabled);
+    gooeyCheckbox.position(20, 50);
+    gooeyCheckbox.changed(onGooeyCheckboxChanged);
 
     frameRate(30);
 
@@ -31,9 +38,22 @@ function setup() {
 function draw() {
     background(255);
 
+    updateEntities();
+
+    if (gooeyEnabled) {
+        gooeyEffect();
+    }
+
+    borderSlider.draw();
+
+    //print(entities.length);
+}
+
+function updateEntities() {
     tmp = [];
+
     for (var i = 0; i < entities.length; i++) {
-        e = entities[i]
+        e = entities[i];
         if (e.update()) {
             e.draw();
 
@@ -42,7 +62,9 @@ function draw() {
     }
 
     entities = tmp;
+}
 
+function gooeyEffect() {
     loadPixels();
 
     for (var i = 0; i < width; i++) {
@@ -67,14 +89,17 @@ function draw() {
     }
 
     updatePixels();
-
-    text("Border", 165, 35);
-
-    //print(entities.length);
 }
+
+//------------ Events
 
 function onBorderSliderMoved() {
     borderThreshold = borderSlider.value();
+}
+
+function onGooeyCheckboxChanged() {
+    gooeyEnabled = gooeyCheckbox.checked();
+    return false;
 }
 
 function mouseClicked() {
@@ -82,7 +107,7 @@ function mouseClicked() {
     entities.push(e);
     //redraw();
 
-    return false;
+    return true;
 }
 
 function mouseMoved() {
@@ -97,6 +122,8 @@ function mouseMoved() {
     return false;
 }
 
+//--------- Misc
+
 function magnitude(x, y) {
     return sqrt(x * x + y * y);
 }
@@ -105,6 +132,8 @@ function normalize(x, y) {
     m = magnitude(x, y);
     return [x / m, y / m];
 }
+
+//---------- Bubble
 
 function Entity(_x, _y, _size, _mov) {
     this.x = _x;
@@ -115,8 +144,6 @@ function Entity(_x, _y, _size, _mov) {
     this.vel_x = _mov[0] * k;
     this.vel_y = _mov[1] * k;
 }
-
-
 
 Entity.prototype.update = function() {
     this.x = this.x + this.vel_x
@@ -137,4 +164,55 @@ Entity.prototype.draw = function() {
     ctx.fillStyle = gradient;
 
     ellipse(this.x, this.y, this.size, this.size);
+}
+
+//------------ Slider
+
+function Slider(_min, _max, _value, _step, _text) {
+    this.delegate = createSlider(_min, _max, _value, _step);
+    this.text = _text;
+
+    this.x = 0;
+    this.y = 0;
+}
+
+Slider.prototype.position = function(_x, _y) {
+    this.delegate.position(_x, _y);
+
+    this.x = _x;
+    this.y = _y;
+}
+
+Slider.prototype.input = function(f) {
+    return this.delegate.input(f);
+}
+
+Slider.prototype.value = function() {
+    return this.delegate.value();
+}
+
+Slider.prototype.draw = function() {
+    strokeWeight(0);
+    textSize(15);
+    textStyle(NORMAL);
+    text(this.text, this.x + 145, this.y + 15);
+}
+
+//---------- Checkbox
+
+function Checkbox(_label, _enabled) {
+    this.delegate = createCheckbox(_label, _enabled);
+}
+
+Checkbox.prototype.changed = function(f) {
+    print('set function');
+    return this.delegate.changed(f);
+}
+
+Checkbox.prototype.position = function(_x, _y) {
+    return this.delegate.position(_x, _y);
+}
+
+Checkbox.prototype.checked = function() {
+    return this.delegate.checked();
 }
