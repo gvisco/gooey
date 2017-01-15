@@ -40,17 +40,18 @@ function draw() {
             var r = (i + j * width) * 4;
             var g = r + 1;
             var b = g + 1;
-            var a = b + 1;
-            if (pixels[r] < 100) {
-                pixels[r] = 0;
-                pixels[g] = 0;
-                pixels[b] = 0;
-                pixels[a] = 255;
-            } else {
-                pixels[r] = 255;
-                pixels[g] = 255;
-                pixels[b] = 255;
-                pixels[a] = 255;
+            if (pixels[r] < 100) { // bubble
+                pixels[r] = 135;
+                pixels[g] = 199;
+                pixels[b] = 191;
+            } else if (pixels[r] < 170) { // border
+                pixels[r] = 22;
+                pixels[g] = 147;
+                pixels[b] = 165;
+            } else { // background
+                pixels[r] = 98;
+                pixels[g] = 182;
+                pixels[b] = 182;
             }
         }
     }
