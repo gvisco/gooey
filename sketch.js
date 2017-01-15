@@ -1,14 +1,24 @@
 var canvas;
 var ctx;
 
+var borderSlider;
+
 var entities = [];
 var mX = 0;
 var mY = 0;
+
+var borderThreshold = 150;
 
 function setup() {
     canvas = createCanvas(640, 480);
     canvas.parent('myCanvas');
     ctx = canvas.drawingContext;
+
+    textSize(15);
+
+    borderSlider = createSlider(101, 255, 120, 1);
+    borderSlider.position(20, 20);
+    borderSlider.input(onBorderSliderMoved);
 
     frameRate(30);
 
@@ -44,7 +54,7 @@ function draw() {
                 pixels[r] = 135;
                 pixels[g] = 199;
                 pixels[b] = 191;
-            } else if (pixels[r] < 170) { // border
+            } else if (pixels[r] < borderThreshold) { // border
                 pixels[r] = 22;
                 pixels[g] = 147;
                 pixels[b] = 165;
@@ -56,10 +66,15 @@ function draw() {
         }
     }
 
-
     updatePixels();
 
+    text("Border", 165, 35);
+
     //print(entities.length);
+}
+
+function onBorderSliderMoved() {
+    borderThreshold = borderSlider.value();
 }
 
 function mouseClicked() {
